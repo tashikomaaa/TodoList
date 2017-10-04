@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Todo List</title>
+  <script src="https://unpkg.com/vue"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+    crossorigin="anonymous">
+  <!-- Optional theme -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp"
+    crossorigin="anonymous">
+  <!-- Latest compiled and minified JavaScript -->
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+    crossorigin="anonymous"></script>
+  <script src="https://use.fontawesome.com/a6b0dde7b4.js"></script>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+
+</head>
+<style>
+  html,
+  body,
+  header,
+  main {
+    height: 100vh;
+  }
+
+  ul {
+    list-style-type: none;
+  }
+
+  header {
+    background: -webkit-linear-gradient(top, #fff, grey);
+    background: linear-gradient(top left, #fff, grey);
+  }
+
+  .scroll {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    height: 0;
+    width: 0;
+    border-left: 90px solid transparent;
+    border-right: 90px solid transparent;
+    border-bottom: 80px solid white;
+    -webkit-transform: translateX(-50%);
+    transform: translateX(-50%);
+  }
+
+  .scroll:before {
+    content: '';
+    position: absolute;
+    top: 45px;
+    left: 50%;
+    height: 20px;
+    width: 30px;
+    margin-top: -5px;
+    margin-left: -15px;
+    background: -webkit-linear-gradient(top left, #e84c00, #c10040);
+    background: linear-gradient(top left, #e84c00, #c10040);
+    -webkit-clip-path: polygon(15% 0, 50% 60%, 85% 0, 100% 20%, 50% 100%, 0 20%);
+    clip-path: polygon(15% 0, 50% 60%, 85% 0, 100% 20%, 50% 100%, 0 20%);
+    -webkit-animation: bounce 2s ease infinite;
+    animation: bounce 2s ease infinite;
+  }
+
+  header img {
+    margin-top: 10%;
+  }
+
+  @-webkit-keyframes bounce {
+    50% {
+      -webkit-transform: scale(0.75) translateY(-50%);
+      transform: scale(0.75) translateY(-50%);
+    }
+    100% {
+      -webkit-transform: translateY(0);
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes bounce {
+    50% {
+      -webkit-transform: scale(0.75) translateY(-50%);
+      transform: scale(0.75) translateY(-50%);
+    }
+    100% {
+      -webkit-transform: translateY(0);
+      transform: translateY(0);
+    }
+  }
+
+  a {
+    text-decoration: none;
+  }
+  /* This class is added on scroll */
+
+  .fixed {
+    position: fixed;
+    top: 0;
+    height: 70px;
+    z-index: 1;
+  }
+
+  body {
+    color: #fff;
+    font-family: 'open-sans-bold', AvenirNext-Medium, sans-serif;
+    font-size: 18px;
+    text-align: center;
+  }
+  /* Navigation Settings */
+
+  #screen1 {
+    background: #43b29d;
+  }
+
+  #screen1 p {
+    padding-top: 100%;
+  }
+
+  #container {
+    position: absolute;
+    top: 65%;
+    left: 48%;
+  }
+
+  #input {
+    position: relative;
+    margin-top: -20px;
+    margin-left: -120px;
+  }
+
+
+
+  .card-container {
+    padding: 9%;
+  }
+
+  .card {
+    background: #fff;
+    border-radius: 2px;
+    display: inline-block;
+    height: 300px;
+    top: 25%;
+    margin: 1rem;
+    width: 300px;
+  }
+
+  .calendar-card {
+    background: #fff;
+    border-radius: 2px;
+    display: inline-block;
+    top: 15%;
+    margin: 1rem;
+    width: 90%;
+  }
+
+  .card-top {
+    background-color: #00aced;
+    height: 60%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  }
+
+  .new {
+    background-color: #e50000;
+  }
+
+  .done {
+    background-color: #00cd00;
+  }
+
+  .progress {
+    background-color: #4d4dff;
+  }
+
+
+  .calendar-card-top {
+    background-color: #efc94d;
+    height: 10%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+  }
+
+  .card-1 {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
+    transition: all 0.3s cubic-bezier(.25, .8, .25, 1);
+  }
+
+  .card-1:hover {
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
+  }
+
+  .btn {
+    position: absolute;
+    border: none;
+    color: white;
+    overflow: hidden;
+    margin: 1rem;
+    padding: 0;
+    text-transform: uppercase;
+    width: 150px;
+    height: 40px;
+  }
+
+  .btn.color-1 {
+    background-color: #426FC5;
+  }
+
+  .btn.color-2 {
+    background-color: #00897b;
+  }
+
+  .btn.color-3 {
+    background-color: #f6774f;
+  }
+
+  .btn.color-4 {
+    background-color: #e94043;
+  }
+
+  .btn-border.color-1 {
+    background-color: transparent;
+    border: 2px solid #426FC5;
+    color: #426FC5;
+  }
+
+  .btn-border.color-2 {
+    background-color: transparent;
+    border: 2px solid #00897b;
+    color: #00897b;
+  }
+
+  .btn-border.color-3 {
+    background-color: transparent;
+    border: 2px solid #f6774f;
+    color: #f6774f;
+  }
+
+  .btn-border.color-4 {
+    background-color: transparent;
+    border: 2px solid #e94043;
+    color: #e94043;
+  }
+
+  .btn-round {
+    border-radius: 10em;
+  }
+
+  .material-design {
+    position: relative;
+  }
+
+  .material-design canvas {
+    opacity: 0.25;
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+
+  .hidden {
+    display: none;
+  }
+</style>
+
+<header id="home">
+  <img src="logo.jpg" alt="">
+  <div id="container">
+
+  </div>
+  <a href="#screen1">
+    <div class='scroll'></div>
+  </a>
+</header>
+
+<body>
+  <section id="screen1">
+    <div class="card-container">
+      <h2>TODO</h2>
+      <div class="calendar-card card-1" style="color: black!important;">
+        <div class="container" id="todo">
+          <!-- Panel for holding our input -->
+          <section class="panel">
+
+            <form v-on:submit.prevent="addTask">
+              <input type="text" placeholder="Task title" class="text-input" v-model="newTaskTitle">
+              <input type="text" placeholder="What do you need to do?" class="text-input" v-model="newTaskContent">
+              <button type="submit">Create</button>
+            </form>
+            <button v-on:click="clearList">Clear List</button>
+
+          </section>
+          <div class="card-container ">
+            <div class="card card-1" v-for="(task, index) in taskList">
+              <div class="card-top task">
+                {{ task.title }}
+              </div>
+              {{ task.text }}
+              <hr>
+              <button class="btn btn-border color-1 material-design" data-color="#2f5398" v-on:click="open(index)">option</button>
+              <div class="selectStatus hidden" :id="index">
+                <button class="btn btn-border color-2 material-design" data-color="#d2181c" v-on:click="changeStatus">done</button>
+                <button class="btn btn-border color-1 material-design" data-color="#d2181c">progress</button>
+                <button class="btn btn-border color-4 material-design" data-color="#d2181c">delete</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</body>
+<script>
+  $(document).ready(function () {
+    let count = 0;
+
+    $('#nav-icon1').click(function () {
+      $(this).toggleClass('open');
+      $('#menu').toggleClass('open');
+    });
+  });
+  $('a[href^="#"]').click(function () {
+    var the_id = $(this).attr("href");
+    $('html, body').animate({
+      scrollTop: $(the_id).offset().top
+    }, 'slow');
+    return false;
+  });
+  $(document).ready(function () {
+    $(window).bind('scroll', function () {
+      var navHeight = $(window).height() - 70;
+      if ($(window).scrollTop() > navHeight) {
+        $('nav').addClass('fixed');
+      } else {
+        $('nav').removeClass('fixed');
+      }
+    });
+  });
+</script>
+
+<script>
+  new Vue({
+
+    el: "#todo",
+
+    data: {
+      count: 0,
+      newTask: [],
+      taskList: []
+    },
+
+    methods: {
+
+      addTask: function () {
+        this.count++
+          let taskTitle = this.newTaskTitle.trim();
+        let taskContent = this.newTaskContent.trim();
+        if (taskTitle) {
+          this.taskList.push({
+            title: taskTitle,
+            text: taskContent,
+            status: 'new',
+            id: this.count,
+            checked: false
+          });
+          this.newTaskTitle = "";
+          this.newTaskContent = "";
+        }
+      },
+
+      clearList: function () {
+        alert('you go to remove all task')
+        this.taskList = [];
+      },
+
+      open: function (index) {
+        this.count++
+          if (this.count % 2 === 0) {
+            $('#' + index).toggleClass('hidden')
+          } else {
+            $('#' + index).toggleClass('hidden')
+          }
+      }
+    }
+  });
+</script>
+
+</html>

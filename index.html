@@ -157,22 +157,22 @@
     width: 90%;
   }
 
-  .card-top {
-    background-color: #00aced;
+  .card-topnew {
+    background-color: #e50000!important;
     height: 60%;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   }
 
-  .new {
-    background-color: #e50000;
+  .card-topdone {
+    background-color: #00cd00!important;
+    height: 60%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   }
 
-  .done {
-    background-color: #00cd00;
-  }
-
-  .progress {
-    background-color: #4d4dff;
+  .card-topprogress {
+    background-color: #3299ff!important;
+    height: 60%;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.12), 0 1px 2px rgba(0, 0, 0, 0.24);
   }
 
 
@@ -296,18 +296,18 @@
           </section>
           <div class="card-container ">
             <div class="card card-1" v-for="(task, index) in taskList">
-              <div class="card-top new">
+              <div class="card-topnew">
                 {{ task.title }}
               </div>
               {{ task.text }}
               <hr>
               <button class="btn btn-border color-1 material-design" data-color="#2f5398" v-on:click="open(index)">option</button>
               <div class="selectStatus hidden" :id="index">
-                <button class="btn btn-border color-2 material-design" data-color="#d2181c" v-on:click="changeStatusToDone(task)">done</button>
+                <button class="btn btn-border color-2 material-design" data-color="#d2181c" onclick="done(this)">done</button>
                 <hr>
-                <button class="btn btn-border color-1 material-design" data-color="#d2181c" v-on:click="changeStatusToProgress(task)">progress</button>
+                <button class="btn btn-border color-1 material-design" data-color="#d2181c" onclick="progress(this)">progress</button>
                 <hr>
-                <button class="btn btn-border color-4 material-design" data-color="#d2181c" v-on:click="deleteTask(task)">delete</button>
+                <button class="btn btn-border color-4 material-design" data-color="#d2181c" v-on:click="deleteTask(task, index)">delete</button>
               </div>
             </div>
           </div>
@@ -317,6 +317,17 @@
   </section>
 </body>
 <script>
+  function progress(el) {
+    el.parentNode.parentNode.firstChild.className = 'card-topprogress'
+    el.parentNode.className = 'selectStatus hidden'
+  }
+
+  function done(el) {
+    el.parentNode.parentNode.firstChild.className = 'card-topdone'
+    el.parentNode.className = 'selectStatus hidden'
+  }
+
+
   $(document).ready(function () {
     let count = 0;
 
@@ -373,25 +384,23 @@
         this.taskList = [];
       },
       open: function (index) {
-        this.count++
-          if (this.count % 2 === 0) {
-            $('#' + index).toggleClass('hidden')
-          } else {
-            $('#' + index).toggleClass('hidden')
-          }
+        $('#' + index).toggleClass('hidden')
       },
 
-      deleteTask: function (task) {
-        var index = this.taskList.indexOf(task);
-        this.taskList.splice(index, 1);
+      deleteTask: function (task, index) {
+        let conf = confirm('you go to delete this task continue ?')
+        if (conf) {
+          var index = this.taskList.indexOf(task);
+          this.taskList.splice(index, 1);
+          $('#' + index).toggleClass('hidden')
+        }else{
+          $('#' + index).toggleClass('hidden')
+          return false
+        }
       },
 
       changeStatusToProgress: function (task) {
         let card = document.getElementsByClassName('.card-top')
-        console.log(card)
-        // this.taskList[index].toggleClass('new')
-        // this.taskList[index].toggleClass('progress')
-
       },
 
       changeStatusToDone: function (task) {
